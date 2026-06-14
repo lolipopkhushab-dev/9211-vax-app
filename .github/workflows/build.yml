@@ -3,33 +3,33 @@ on: [push, workflow_dispatch]
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04  # Stable older Ubuntu jahan Python issue nahi karta
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
 
-    - name: Set up Python
+    - name: Set up Python 3.9 (Stable Environment)
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.9'
 
-    - name: Set up Java JDK 17 (Zaroori Fix)
+    - name: Set up Java JDK 17
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Install Android Compiler Tools
+    - name: Install System Dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential libtool autoconf automake pkg-config libffi-dev libssl-dev zip unzip
-        pip install --upgrade pip
-        pip install buildozer cython==0.29.33
+        pip install --upgrade pip setuptools wheel
+        pip install git+https://github.com/kivy/buildozer.git@master  # Naya Buildozer fixed version
+        pip install cython==0.29.33
 
-    - name: Build Android APK (Release Mode)
+    - name: Build Android APK
       run: |
-        # OpenJDK 17 ka exact path set karna taake tools.jar ka error na aaye
         export JAVA_HOME=$JAVA_HOME_17_X64
         export PATH=$JAVA_HOME/bin:$PATH
         yes | buildozer -v android debug
