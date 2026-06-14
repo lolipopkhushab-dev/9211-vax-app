@@ -21,15 +21,6 @@ jobs:
         pip install --upgrade pip
         pip install buildozer cython==0.29.33
 
-    - name: Initialize and Configure Buildozer
-      run: |
-        buildozer init
-        # Auto-configure buildozer.spec file for CSV and single architecture
-        sed -i 's/title = My Application/title = 9211 Automation/' buildozer.spec
-        sed -i 's/requirements = python3,kivy/requirements = python3,kivy,kivymd,requests,jnius/' buildozer.spec
-        sed -i 's/#android.archs = arm64-v8a/android.archs = arm64-v8a/' buildozer.spec
-        sed -i 's/android.api = 31/android.api = 33/' buildozer.spec
-
     - name: Build Android APK (Release Mode)
       run: |
         yes | buildozer -v android debug
