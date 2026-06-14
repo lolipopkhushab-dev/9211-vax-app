@@ -14,42 +14,24 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install Android Compiler Tools
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential libtool autoconf automake pkg-config libffi-dev libssl-dev target-openjdk-17-jdk zip unzip
-        pip install --upgrade pip
-        pip install buildozer cython==0.29.33
-
-    - name: Build Android APK (Release Mode)
-      run: |
-        yes | buildozer -v android debug
-
-    name: Build Android APK Offline
-on: [push, workflow_dispatch]
-
-jobs:
-  build:
-    runs-on: ubuntu-22.04
-
-    steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - name: Set up Java JDK 17 (Zaroori Fix)
+      uses: actions/setup-java@v3
       with:
-        python-version: '3.10'
+        distribution: 'temurin'
+        java-version: '17'
 
     - name: Install Android Compiler Tools
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential libtool autoconf automake pkg-config libffi-dev libssl-dev target-openjdk-17-jdk zip unzip
+        sudo apt-get install -y build-essential libtool autoconf automake pkg-config libffi-dev libssl-dev zip unzip
         pip install --upgrade pip
         pip install buildozer cython==0.29.33
 
     - name: Build Android APK (Release Mode)
       run: |
+        # OpenJDK 17 ka exact path set karna taake tools.jar ka error na aaye
+        export JAVA_HOME=$JAVA_HOME_17_X64
+        export PATH=$JAVA_HOME/bin:$PATH
         yes | buildozer -v android debug
 
     - name: Upload APK File
